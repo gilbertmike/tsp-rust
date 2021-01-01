@@ -15,33 +15,22 @@ impl Town {
     }
 }
 
-/// TSP algorithm.
-struct TSP {}
-
-impl TSP {
-    /// Initialize a TSP algorithm.
-    fn create() -> TSP {
-        TSP {}
-    }
-
-    /// Solve a TSP problem specified by a vector of towns.
-    fn solve(self: &Self, towns: &Vec<Town>) -> (Vec<usize>, f64) {
-        let mut smallest_dist: f64 = f64::INFINITY;
-        let mut best_order: Vec<usize> = vec![];
-        for order in (0..towns.len()).permutations(towns.len()) {
-            let dist = order
-                .iter()
-                .tuple_windows()
-                .fold(0.0, |acc, (town1, town2)| {
-                    acc + towns[*town1].dist(&towns[*town2])
-                });
-            if dist < smallest_dist {
-                smallest_dist = dist;
-                best_order = order;
-            }
+fn tsp_solve(towns: &Vec<Town>) -> (Vec<usize>, f64) {
+    let mut smallest_dist: f64 = f64::INFINITY;
+    let mut best_order: Vec<usize> = vec![];
+    for order in (0..towns.len()).permutations(towns.len()) {
+        let dist = order
+            .iter()
+            .tuple_windows()
+            .fold(0.0, |acc, (town1, town2)| {
+                acc + towns[*town1].dist(&towns[*town2])
+            });
+        if dist < smallest_dist {
+            smallest_dist = dist;
+            best_order = order;
         }
-        (best_order, smallest_dist)
     }
+    (best_order, smallest_dist)
 }
 
 fn main() {
@@ -65,13 +54,12 @@ fn main() {
         })
         .collect();
 
-    let tsp = TSP::create();
     let mut duration: f32 = f32::INFINITY;
     let mut order: Vec<usize> = vec![];
     let mut dist: f64 = f64::INFINITY;
     for _ in 0..5 {
         let start = std::time::Instant::now();
-        let tup = tsp.solve(&towns);
+        let tup = tsp_solve(&towns);
         duration = duration.min(start.elapsed().as_secs_f32());
         order = tup.0;
         dist = tup.1;
