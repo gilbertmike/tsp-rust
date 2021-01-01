@@ -1,3 +1,4 @@
+use itertools::FoldWhile::{Continue, Done};
 use itertools::Itertools;
 use rand::prelude::random;
 use std::env;
@@ -22,9 +23,15 @@ fn tsp_solve(towns: &Vec<Town>) -> (Vec<usize>, f64) {
         let dist = order
             .iter()
             .tuple_windows()
-            .fold(0.0, |acc, (town1, town2)| {
-                acc + towns[*town1].dist(&towns[*town2])
-            });
+            .fold_while(0.0, |acc, (town1, town2)| {
+                let new_acc = acc + towns[*town1].dist(&towns[*town2]);
+                if new_acc > smallest_dist {
+                    Done(new_acc)
+                } else {
+                    Continue(new_acc)
+                }
+            })
+            .into_inner();
         if dist < smallest_dist {
             smallest_dist = dist;
             best_order = order;
