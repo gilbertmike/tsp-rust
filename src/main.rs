@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use rand::prelude::random;
 use std::env;
 
@@ -6,6 +7,12 @@ use std::env;
 struct Town {
     pub x: f64,
     pub y: f64,
+}
+
+impl Town {
+    fn dist(self: &Self, other: &Town) -> f64 {
+        ((self.x - other.x).powi(2) + (self.y - other.y).powi(2)).sqrt()
+    }
 }
 
 /// TSP algorithm.
@@ -18,8 +25,22 @@ impl TSP {
     }
 
     /// Solve a TSP problem specified by a vector of towns.
-    fn solve(self: &mut Self, towns: &Vec<Town>) -> Vec<usize> {
-        unimplemented!();
+    fn solve(self: &Self, towns: &Vec<Town>) -> (Vec<usize>, f64) {
+        let mut smallest_dist: f64 = std::f64::INFINITY;
+        let mut best_order: Vec<usize> = vec![];
+        for order in (0..towns.len()).permutations(towns.len()) {
+            let dist = order
+                .iter()
+                .tuple_windows()
+                .fold(0.0, |acc, (town1, town2)| {
+                    acc + towns[*town1].dist(&towns[*town2])
+                });
+            if dist < smallest_dist {
+                smallest_dist = dist;
+                best_order = order;
+            }
+        }
+        (best_order, smallest_dist)
     }
 }
 
@@ -44,9 +65,9 @@ fn main() {
         })
         .collect();
 
-    let mut tsp = TSP::create();
+    let tsp = TSP::create();
     let start = std::time::Instant::now();
-    let order = tsp.solve(&towns);
+    let (order, dist) = tsp.solve(&towns);
     let duration = start.elapsed();
 
     print!("Result: ");
@@ -54,5 +75,6 @@ fn main() {
         print!("{}, ", town);
     }
     println!();
+    println!("Dist: {}", dist);
     println!("Elapsed time: {} sec", duration.as_secs_f32());
 }
