@@ -66,9 +66,16 @@ fn main() {
         .collect();
 
     let tsp = TSP::create();
-    let start = std::time::Instant::now();
-    let (order, dist) = tsp.solve(&towns);
-    let duration = start.elapsed();
+    let mut duration: f32 = f32::INFINITY;
+    let mut order: Vec<usize> = vec![];
+    let mut dist: f64 = f64::INFINITY;
+    for _ in 0..5 {
+        let start = std::time::Instant::now();
+        let tup = tsp.solve(&towns);
+        duration = duration.min(start.elapsed().as_secs_f32());
+        order = tup.0;
+        dist = tup.1;
+    }
 
     print!("Result: ");
     for town in order {
@@ -76,5 +83,5 @@ fn main() {
     }
     println!();
     println!("Dist: {}", dist);
-    println!("Elapsed time: {} sec", duration.as_secs_f32());
+    println!("Elapsed time: {} towns in {} sec", ntowns, duration);
 }
