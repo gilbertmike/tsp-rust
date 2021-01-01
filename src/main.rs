@@ -26,7 +26,7 @@ impl TSP {
 
     /// Solve a TSP problem specified by a vector of towns.
     fn solve(self: &Self, towns: &Vec<Town>) -> (Vec<usize>, f64) {
-        let mut smallest_dist: f64 = std::f64::INFINITY;
+        let mut smallest_dist: f64 = f64::INFINITY;
         let mut best_order: Vec<usize> = vec![];
         for order in (0..towns.len()).permutations(towns.len()) {
             let dist = order
