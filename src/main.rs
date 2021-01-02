@@ -1,44 +1,7 @@
-use itertools::FoldWhile::{Continue, Done};
-use itertools::Itertools;
 use rand::prelude::random;
 use std::env;
 
-/// A town with x and y coordinate.
-#[derive(Clone, Copy)]
-struct Town {
-    pub x: f64,
-    pub y: f64,
-}
-
-impl Town {
-    fn dist(self: &Self, other: &Town) -> f64 {
-        ((self.x - other.x).powi(2) + (self.y - other.y).powi(2)).sqrt()
-    }
-}
-
-fn tsp_solve(towns: &Vec<Town>) -> (Vec<usize>, f64) {
-    let mut smallest_dist: f64 = f64::INFINITY;
-    let mut best_order: Vec<usize> = vec![];
-    for order in (0..towns.len()).permutations(towns.len()) {
-        let dist = order
-            .iter()
-            .tuple_windows()
-            .fold_while(0.0, |acc, (town1, town2)| {
-                let new_acc = acc + towns[*town1].dist(&towns[*town2]);
-                if new_acc > smallest_dist {
-                    Done(new_acc)
-                } else {
-                    Continue(new_acc)
-                }
-            })
-            .into_inner();
-        if dist < smallest_dist {
-            smallest_dist = dist;
-            best_order = order;
-        }
-    }
-    (best_order, smallest_dist)
-}
+use tsp_rust::tsp;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -54,8 +17,8 @@ fn main() {
         }
     };
 
-    let towns: Vec<Town> = (0..ntowns)
-        .map(|_| Town {
+    let towns: Vec<tsp::Town> = (0..ntowns)
+        .map(|_| tsp::Town {
             x: random(),
             y: random(),
         })
@@ -66,7 +29,7 @@ fn main() {
     let mut dist: f64 = f64::INFINITY;
     for _ in 0..5 {
         let start = std::time::Instant::now();
-        let tup = tsp_solve(&towns);
+        let tup = tsp::tsp_solve(&towns);
         duration = duration.min(start.elapsed().as_secs_f32());
         order = tup.0;
         dist = tup.1;

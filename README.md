@@ -18,6 +18,6 @@ Set opts-level to 3 for release mode.
 Did not make much difference. Not committed.
 
 ### Stop computing a path already larger than best distance.
-Result: 10 in 0.388s; 11 in 4.182s
+Result: 10 in 0.0032s; 13 in 0.924s
 
 Stop computing a path that cannot be smaller than current smallest distance.
