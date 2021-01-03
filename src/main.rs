@@ -1,4 +1,4 @@
-use rand::prelude::random;
+use rand;
 use std::env;
 
 use tsp_rust::tsp;
@@ -19,21 +19,14 @@ fn main() {
 
     let towns: Vec<tsp::Town> = (0..ntowns)
         .map(|_| tsp::Town {
-            x: random(),
-            y: random(),
+            x: rand::random(),
+            y: rand::random(),
         })
         .collect();
 
-    let mut duration: f32 = f32::INFINITY;
-    let mut order: Vec<usize> = vec![];
-    let mut dist: f64 = f64::INFINITY;
-    for _ in 0..5 {
-        let start = std::time::Instant::now();
-        let tup = tsp::tsp_solve(&towns);
-        duration = duration.min(start.elapsed().as_secs_f32());
-        order = tup.0;
-        dist = tup.1;
-    }
+    let start = std::time::Instant::now();
+    let (order, dist) = tsp::tsp_solve(&towns);
+    let duration = start.elapsed().as_secs_f32();
 
     print!("Result: ");
     for town in order {
