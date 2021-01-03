@@ -3,6 +3,10 @@ Adventures in Travelling Salesperson in Rust. Inspired by a performance
 engineering lecture by Jon Bentley at MIT.
 
 ## Optimizations
+Numbers in "result" is only approximate as best as the input is generated 
+randomly and are only quick performance test to help while working. Better
+performance numbers can be obtained using the benchmarks although the inputs
+are still randomly generated.
 
 ### Brute force.
 Result: 9 towns in 1.075s; 10 towns in 11.310s.
