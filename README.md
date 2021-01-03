@@ -21,3 +21,9 @@ Did not make much difference. Not committed.
 Result: 10 in 0.0032s; 13 in 0.924s
 
 Stop computing a path that cannot be smaller than current smallest distance.
+
+### Get better lower bound of best path distance
+Result: 13 in 0.088s; 14 in 2.56s.
+
+Use distance between starting town and furthest unvisited town as lower bound
+for minimum path length visiting all unvisiting towns.

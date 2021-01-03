@@ -6,11 +6,28 @@ pub struct Town {
 }
 
 impl Town {
+    /// Returns distance to another town `other`.
     pub fn dist(self: &Self, other: &Town) -> f64 {
         ((self.x - other.x).powi(2) + (self.y - other.y).powi(2)).sqrt()
     }
 }
 
+/// Solves the Travelling Salesperson problem given vector of towns. Returns an ordering (vector
+/// of indices) and optimal distance.
+///
+/// # Examples
+///
+/// ```
+/// use tsp_rust::{tsp_solve, Town};
+/// let towns = vec![
+///     Town { x: 0.0, y: 0.0 },
+///     Town { x: 2.0, y: 0.0 },
+///     Town { x: 1.0, y: 0.0 },
+/// ];
+/// let (order, dist) = tsp_solve(&towns);
+/// assert_eq!(dist, 2.0);
+/// assert!(order == [0, 2, 1] || order == [1, 2, 0]);
+/// ```
 pub fn tsp_solve(towns: &Vec<Town>) -> (Vec<usize>, f64) {
     let mut smallest_dist = f64::INFINITY;
     let mut best_order: Vec<usize> = vec![0; towns.len()];
@@ -65,6 +82,17 @@ fn tsp_solve_with_start(
     for (idx, town) in towns.iter().enumerate() {
         let dist = cur_dist + town.dist(&start_town);
         if visited[idx] || dist > new_smallest_dist {
+            continue;
+        }
+        // The path through all the rest of the towns has to be longer than the distance between
+        // the start and the town furthest away so it is a valid heuristic
+        let mut longest_dist_unvisited = 0.0;
+        for (other_idx, other) in towns.iter().enumerate() {
+            if !visited[other_idx] && other.dist(&town) > longest_dist_unvisited {
+                longest_dist_unvisited = other.dist(&town);
+            }
+        }
+        if dist + longest_dist_unvisited > new_smallest_dist {
             continue;
         }
         visited[idx] = true;
